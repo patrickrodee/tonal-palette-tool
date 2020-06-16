@@ -33,6 +33,7 @@ class ColorPicker extends LitElement {
       #label {
         font-family: monospace;
         color: var(--accessible-color);
+        text-align: center;
       }
 
       #tooltip {
@@ -128,7 +129,7 @@ class ColorPicker extends LitElement {
         '--accessible-color': lum.raw <= 0.175 ? 'white' : 'black',
       })}>
       <input id="input" type="color" value="${this.color}" @input="${this.handleInput}" @change="${this.handleChange}">
-      <span id="label">${lum.legible}</span>
+      <span id="label">Lum: ${lum.legible}<br>Hex: ${this.color}</span>
       ${passes ? '' : html`<svg id="warning" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`}
       <span id="tooltip">${this.scale} ${this.grade}: ${message}</span>
     </label>`;
