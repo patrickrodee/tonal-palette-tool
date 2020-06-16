@@ -44,14 +44,12 @@ class ColorPicker extends LitElement {
         top: 50%;
         transform: translate(100%, -50%);
         z-index: 1;
-        padding: 0 0.25rem;
-        min-width: 220px;
+        padding: 0.25rem;
+        max-width: 160px;
         opacity: 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        white-space: nowrap;
         transition: 150ms opacity linear;
         pointer-events: none;
-        height: 24px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
@@ -97,16 +95,24 @@ class ColorPicker extends LitElement {
   grade = -1;
 
   handleInput(event: InputEvent) {
-    const color = (event.target as HTMLInputElement).value;
-    this.color = color;
+    const evt = new CustomEvent('color-input', {
+      detail: {
+        scale: this.scale,
+        grade: this.grade,
+        color: (event.target as HTMLInputElement).value,
+      },
+      bubbles: true, 
+      composed: true,
+    });
+    this.dispatchEvent(evt);
   }
 
-  handleChange() {
+  handleChange(event: InputEvent) {
     const evt = new CustomEvent('color-change', {
       detail: {
         scale: this.scale,
         grade: this.grade,
-        color: this.color,
+        color: (event.target as HTMLInputElement).value,
       },
       bubbles: true, 
       composed: true,

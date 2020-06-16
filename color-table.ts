@@ -12,7 +12,7 @@ interface Grade {
   grade: number;
 }
 
-let seedValues: Scale[] = [
+const seedValues: Scale[] = [
   {
     scale: 'Blue',
     grades: [
@@ -83,12 +83,6 @@ let seedValues: Scale[] = [
   },
 ];
 
-const urlParams = new URLSearchParams(window.location.search);
-const data = urlParams.get('data');
-if (data) {
-  seedValues = JSON.parse(atob(data));
-}
-
 @customElement('color-table')
 class ColorTable extends LitElement {
   static get styles() {
@@ -103,15 +97,82 @@ class ColorTable extends LitElement {
   @property({type: Array})
   table = seedValues;
 
+  handlePopState = (event: PopStateEvent) => {
+    if (event.state) {
+      this.table = event.state;
+      return;
+    }
+
+    this.table = this.initTable();
+  };
+
+  constructor() {
+    super();
+
+    this.table = this.initTable();
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('popstate', this.handlePopState);
+  }
+
+  disconnectedCallback() {
+    super.connectedCallback();
+    window.removeEventListener('popstate', this.handlePopState);
+  }
+
+  handleColorInput(event) {
+    const {scale, grade, color} = event.detail;
+    const {didUpdate, table} = this.updateValues(scale, grade, color);
+    if (didUpdate) {
+      this.table = table;
+    }
+  }
+
   handleColorChange(event) {
-    console.log(event);
+    const {scale, grade, color} = event.detail;
+    const {table} = this.updateValues(scale, grade, color);
+    this.table = table;
+    window.history.pushState(table, null, `?config=${btoa(JSON.stringify(table))}`);
   }
 
   render() {
-    return html`<div id="root" @color-change="${this.handleColorChange}">
+    return html`<div id="root" @color-change="${this.handleColorChange}" @color-input="${this.handleColorInput}">
       ${this.table.map(({scale, grades}) => {
         return html`<color-grade .scale="${scale}" .grades="${grades}"></color-grade>`;
       })}
     </div>`;
+  }
+
+  private updateValues(scale, grade, color) {
+    const table = JSON.parse(JSON.stringify(this.table));
+    for (const seed of table) {
+      if (seed.scale === scale) {
+        for (const g of seed.grades) {
+          if (g.grade === grade) {
+            g.color = color;
+            return {
+              didUpdate: true,
+              table,
+            };
+          }
+        }
+      }
+    }
+    return {
+      didUpdate: false,
+      table,
+    };
+  }
+
+  private initTable() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const config = urlParams.get('config');
+    if (config && config.length > 0) {
+      return JSON.parse(atob(config));
+    }
+
+    return seedValues;
   }
 }
