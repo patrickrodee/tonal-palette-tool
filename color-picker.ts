@@ -1,7 +1,7 @@
 import {LitElement, html, css, customElement, property} from 'lit-element';
 import { styleMap } from 'lit-html/directives/style-map';
 
-import {luminance, isColorValid} from './contrast';
+import {luminance, isColorValid, hexToHslString} from './contrast';
 
 @customElement('color-picker')
 class ColorPicker extends LitElement {
@@ -12,7 +12,7 @@ class ColorPicker extends LitElement {
         border-width: 2px;
         border-style: solid;
         border-color: transparent;
-        width: 96px;
+        width: 156px;
         height: 96px;
         cursor: pointer;
         position: relative;
@@ -129,7 +129,7 @@ class ColorPicker extends LitElement {
         '--accessible-color': lum.raw <= 0.175 ? 'white' : 'black',
       })}>
       <input id="input" type="color" value="${this.color}" @input="${this.handleInput}" @change="${this.handleChange}">
-      <span id="label">Lum: ${lum.legible}<br>Hex: ${this.color}</span>
+      <span id="label">Lum: ${lum.legible}<br>${this.color}<br>${hexToHslString(this.color)}</span>
       ${passes ? '' : html`<svg id="warning" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`}
       <span id="tooltip">${this.scale} ${this.grade}: ${message}</span>
     </label>`;
