@@ -2,8 +2,16 @@ import {LitElement, html, css, customElement, property} from 'lit-element';
 
 import './color-grade';
 
+enum ColorNames {
+  BLUE = 'Blue',
+  RED = 'Red',
+  GREEN = 'Green',
+  YELLOW = 'Yellow',
+  GREY = 'Grey',
+}
+
 interface Scale {
-  scale: string;
+  scale: ColorNames;
   grades: Grade[];
 }
 
@@ -14,7 +22,7 @@ interface Grade {
 
 const seedValues: Scale[] = [
   {
-    scale: 'Blue',
+    scale: ColorNames.BLUE,
     grades: [
       {color: '#ffffff', grade: 0},
       {color: '#ecf3fe', grade: 5},
@@ -31,7 +39,7 @@ const seedValues: Scale[] = [
     ],
   },
   {
-    scale: 'Red',
+    scale: ColorNames.RED,
     grades: [
       {color: '#ffffff', grade: 0},
       {color: '#fceeee', grade: 5},
@@ -48,7 +56,7 @@ const seedValues: Scale[] = [
     ],
   },
   {
-    scale: 'Green',
+    scale: ColorNames.GREEN,
     grades: [
       {color: '#ffffff', grade: 0},
       {color: '#ddf9e5', grade: 5},
@@ -65,7 +73,7 @@ const seedValues: Scale[] = [
     ],
   },
   {
-    scale: 'Yellow',
+    scale: ColorNames.YELLOW,
     grades: [
       {color: '#ffffff', grade: 0},
       {color: '#fff0d1', grade: 5},
@@ -78,6 +86,23 @@ const seedValues: Scale[] = [
       {color: '#614200', grade: 70},
       {color: '#422d00', grade: 80},
       {color: '#291c00', grade: 90},
+      {color: '#000000', grade: 100},
+    ],
+  },
+  {
+    scale: ColorNames.GREY,
+    grades: [
+      {color: '#ffffff', grade: 0},
+      {color: '#f2f2f2', grade: 5},
+      {color: '#e3e3e3', grade: 10},
+      {color: '#c7c7c7', grade: 20},
+      {color: '#ababab', grade: 30},
+      {color: '#8f8f8f', grade: 40},
+      {color: '#757575', grade: 50},
+      {color: '#5e5e5e', grade: 60},
+      {color: '#474747', grade: 70},
+      {color: '#303030', grade: 80},
+      {color: '#1f1f1f', grade: 90},
       {color: '#000000', grade: 100},
     ],
   },
@@ -166,11 +191,28 @@ class ColorTable extends LitElement {
     };
   }
 
+  private addUnloadedScales(scales: Scale[], names: ColorNames[]): Scale[] {
+    const out = [...scales];
+    for (const name of names) {
+      const hasScale = scales.find((grade) => grade.scale === name) !== undefined;
+      if (!hasScale) {
+        const scale = seedValues.find((grade) => grade.scale === name);
+        if (scale) {
+          out.push(scale);
+        }
+      }
+    }
+    return out;
+  }
+
   private initTable() {
     const urlParams = new URLSearchParams(window.location.search);
     const config = urlParams.get('config');
     if (config && config.length > 0) {
-      return JSON.parse(atob(config));
+      const out = JSON.parse(atob(config));
+      return this.addUnloadedScales(out, [
+        ColorNames.GREY,
+      ]);
     }
 
     return seedValues;
