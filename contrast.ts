@@ -104,7 +104,7 @@ const buckets = new Map<number, Bucket>([
   [5, { min: 0.85, max: 0.93 }],
   [10, { min: 0.75, max: 0.82 }],
   [20, { min: 0.5, max: 0.65 }],
-  [30, { min: 0.35, max: 0.45 }],
+  [30, { min: 0.36, max: 0.45 }],
   [40, { min: 0.25, max: 0.3 }],
   [50, { min: 0.175, max: 0.183 }],
   [60, { min: 0.1, max: 0.125 }],
